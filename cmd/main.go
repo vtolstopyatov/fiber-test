@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
@@ -9,6 +8,7 @@ import (
 	"fibertest/internal/db"
 	"fibertest/internal/handler"
 	"fibertest/internal/seed_test_data"
+	"fibertest/internal/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -16,7 +16,7 @@ import (
 
 func setupRoutes(app *fiber.App) {
 	app.Get("/list", handler.GetNewsList)
-	app.Post("/edit/:id", handler.UpdateNews)
+	app.Post("/edit/:id", middleware.Auth(), handler.UpdateNews)
 }
 
 func init() {
@@ -35,22 +35,9 @@ func main() {
 	}
 
 	app := fiber.New(fiber.Config{
-		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			code := fiber.StatusInternalServerError
-
-			var e *fiber.Error
-			if errors.As(err, &e) {
-				code = e.Code
-			}
-
-			ctx.Status(code).JSON(fiber.Map{
-				"Success": false,
-				"Error":   err.Error(),
-			})
-
-			return nil
-		},
+		ErrorHandler: handler.ErrorHandler,
 	})
+
 	setupRoutes(app)
 
 	log.Fatal(app.Listen(fmt.Sprintf(":%v", cfg.HTTPPort)))
