@@ -14,10 +14,13 @@ func GetNewsList(c *fiber.Ctx) error {
 	LEFT JOIN news_categories ON news.id = news_categories.news_id
 	GROUP BY news.id
 	ORDER BY news.id DESC
-	LIMIT 1000
+	LIMIT $1 OFFSET $2
 	`
 
-	rows, err := db.DB.Query(query)
+	limit := c.QueryInt("limit", 10)
+	offset := c.QueryInt("offset", 0)
+
+	rows, err := db.DB.Query(query, limit, offset)
 	if err != nil {
 		return fiber.ErrInternalServerError
 	}
