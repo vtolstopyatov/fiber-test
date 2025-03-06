@@ -2,7 +2,7 @@
 
 ### Тестовый проект с 2 ручками:
 
-`POST /news/:id` — изменение новости. Требуется заголовок Authorization: Bearer my-super-secret-key
+`POST /news/:id` — изменение новости. Требуется заголовок `Authorization: Bearer my-super-secret-key`
 
 `GET /news?limit=10&offset=0` — получение списка новостей
 
